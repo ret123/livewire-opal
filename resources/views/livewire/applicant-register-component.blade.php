@@ -22,9 +22,6 @@
 
                 <div class="card">
                     <div class="card-header">Contact Details</div>
-
-
-
                     <div class="card-body">
 
                         @if ($errors->any())
@@ -41,12 +38,12 @@
                             <ul></ul>
                         </div>
                         <div class="form-inline mb-4">
-                            <input class="form-check-input" type="radio" wire:model="company_type" name="company_type" value="NGO" {{{ $company_type == 'NGO' ? "checked" : "" }}} id="flexRadioDefault1" checked">
+                            <input class="form-check-input" type="radio" wire:model="company_type" name="company_type" value="NGO" id="flexRadioDefault1" checked">
                             <label class="form-check-label" for="flexRadioDefault1">
                                 NGO
                             </label>
 
-                            <input class="form-check-input ml-4" type="radio" wire:model="company_type" name="company_type" {{{ $company_type == 'Company' ? "checked" : "" }}} value="Company" id="flexRadioDefault2" onclick="show2();">
+                            <input class="form-check-input ml-4" type="radio" wire:model="company_type" name="company_type"  value="Company" id="flexRadioDefault2" onclick="show2();">
                             <label class="form-check-label" for="flexRadioDefault2">
                                 Company
                             </label>
@@ -59,18 +56,27 @@
                         </div>
 
                         <div class="row">
-                            <div class="form-group col-md-4">
-                                <label for="company_name">Company Name:</label>
-                                <input type="text" wire:model="company_name" class="form-control" id="company_name" name="company_name" />
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="email">Email:</label>
-                                <input type="text" wire:model="email" class="form-control" id="email" name="email" />
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="otp">Verify Email Address:</label>
-                                <button class="btn btn-primary" wire:click="sendOTP" id="getOTP">Request OTP</button>
-                            </div>
+                            <form action="">
+                                <div class="form-group col-md-4">
+                                    <label for="company_name">Company Name:</label>
+                                    <input type="text" wire:model="company_name" class="form-control" id="company_name" name="company_name" />
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="email">Email:</label>
+                                    <input type="text" wire:model="email" class="form-control" id="email" name="email" />
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="otp">Verify 
+                                    <button class="btn btn-primary" wire:click="sendOTP" 
+                                    wire:loading.attr="disabled"
+                                    id="getOTP">
+                                    <span wire:loading.remove wire.target="sendOTP">Request OTP</span>
+                                    <span wire:loading wire.target="sendOTP" style="display:none">Sending..</span>
+                                    </button>
+                                  
+                                </div>
+                            </form>
+                           
                         </div>
 
                         <div class="row">
@@ -80,9 +86,9 @@
                                 <input type="text" id="otp" class="form-control" name="otp" />
                             </div>
                         </div>
-                        <button class="btn btn-primary">Validate OTP</button>
-
-                        <div id="show-form" class="mt-4">
+                        <button class="btn btn-primary" wire:click="verifyOTP">Validate OTP</button>
+                        @if($showMainForm == true)
+                        <div id="show-form" x-show="{showMainForm = true}" class="mt-4">
                             <div class="row">
                                 <div class="form-group col-md-4">
                                     <label for="first_name">First Name:</label>
@@ -145,6 +151,7 @@
 
 
                         </div>
+                        @endif
 
 
 

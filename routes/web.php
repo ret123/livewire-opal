@@ -15,4 +15,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', ApplicantRegisterComponent::class)->name('register.step1');
+Route::get('/', ApplicantRegisterComponent::class)->name('register.step1')->name('home');
