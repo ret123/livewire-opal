@@ -1,4 +1,14 @@
 <div>
+    @if (session()->has('message'))
+    <div class="alert alert-success" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
+        {{ session('message') }}
+    </div>
+    @endif
+    @if (session()->has('error'))
+    <div class="alert alert-danger" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
+        {{ session('error') }}
+    </div>
+    @endif
     <div class="stepwizard">
         <div class="stepwizard-row setup-panel">
             <div class="multi-wizard-step">
@@ -38,122 +48,139 @@
                             <ul></ul>
                         </div>
                         <div class="form-inline mb-4">
-                            <input class="form-check-input" type="radio" wire:model="company_type" name="company_type" value="NGO" id="flexRadioDefault1" checked">
-                            <label class="form-check-label" for="flexRadioDefault1">
+                            <input class="form-check-input" type="radio" wire:model="company_type" name="company_type" value="NGO" id="ngo" checked wire:click="$set('show', false)" :errors="$errors">
+                            <label class="form-check-label" for="ngo">
                                 NGO
                             </label>
 
-                            <input class="form-check-input ml-4" type="radio" wire:model="company_type" name="company_type"  value="Company" id="flexRadioDefault2" onclick="show2();">
-                            <label class="form-check-label" for="flexRadioDefault2">
+                            <input class="form-check-input ms-4" type="radio" wire:model="company_type" name="company_type" value="Company" id="company" wire:click="$set('show', true)" :errors="$errors">
+                            <label class="form-check-label" for="company">
                                 Company
                             </label>
                         </div>
+                        @if($show)
                         <div class="row">
-                            <div id="div1" class="form-group  col-md-4" style="display:none">
+                            <div id="div1" class="form-group  col-md-4">
                                 <label for="company_number">Company Registration Number:</label>
-                                <input type="text" wire:model="company_number" class="form-control" id="company_number" name="company_number">
+                                <input type="text" wire:model="company_number" class="form-control mt-2" id="company_number" name="company_number">
+                                @error('company_number') <p class="text-danger">{{$message}}</p> @enderror
                             </div>
                         </div>
+                        @endif
+                        <form wire:submit.prevent="sendOTP">
+                            <div class="row mt-2">
 
-                        <div class="row">
-                            <form action="">
                                 <div class="form-group col-md-4">
                                     <label for="company_name">Company Name:</label>
-                                    <input type="text" wire:model="company_name" class="form-control" id="company_name" name="company_name" />
+                                    <input type="text" wire:model="company_name" class="form-control mt-2" id="company_name" name="company_name" :errors="$errors" />
+                                    @error('company_name') <p class="text-danger">{{$message}}</p> @enderror
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="email">Email:</label>
-                                    <input type="text" wire:model="email" class="form-control" id="email" name="email" />
+                                    <input type="text" wire:model="email" class="form-control mt-2" id="email" name="email" :errors="$errors" />
+                                    @error('email') <p class="text-danger">{{$message}}</p> @enderror
                                 </div>
+                                @if(!$hideOTP)
                                 <div class="form-group col-md-4">
-                                    <label for="otp">Verify 
-                                    <button class="btn btn-primary" wire:click="sendOTP" 
-                                    wire:loading.attr="disabled"
-                                    id="getOTP">
-                                    <span wire:loading.remove wire.target="sendOTP">Request OTP</span>
-                                    <span wire:loading wire.target="sendOTP" style="display:none">Sending..</span>
+
+                                    <label for="otp">Verify Email Address </label> <br>
+                                    <button class="btn btn-primary mt-2" type="submit" id="getOTP" wire:loading.attr="disabled" wire:click="sendOTP">
+                                        <span wire:loading.remove wire:target="sendOTP">Request OTP</span>
+                                        <span wire:loading wire:target="sendOTP">Sending OTP...</span>
+
                                     </button>
-                                  
                                 </div>
-                            </form>
-                           
-                        </div>
+                                @endif
 
-                        <div class="row">
 
-                            <div class="form-group col-md-4">
-                                <label for="otp">OTP:</label>
-                                <input type="text" id="otp" class="form-control" name="otp" />
                             </div>
-                        </div>
-                        <button class="btn btn-primary" wire:click="verifyOTP">Validate OTP</button>
-                        @if($showMainForm == true)
-                        <div id="show-form" x-show="{showMainForm = true}" class="mt-4">
+                        </form>
+                        @if(!$hideOTP)
+                        <form wire:submit.prevent="verifyOTP">
+                            <div class="row mt-2">
+                                <div class="form-group col-md-4">
+                                    <label for="otp">OTP:</label>
+                                    <input type="text" id="otp" wire:model="otp" class="form-control mt-2" name="otp" />
+                                </div>
+                            </div>
+                            <button class="btn btn-primary mt-4" wire:click="verifyOTP">Validate OTP</button>
+                        </form>
+                        @endif
+
+                        @if($showMainForm)
+                        <div id="show-form" class="mt-4">
+
                             <div class="row">
                                 <div class="form-group col-md-4">
                                     <label for="first_name">First Name:</label>
-                                    <input type="text" wire:model="first_name" value="{{ $company->first_name ?? '' }}" class="form-control" id="first_name" name="first_name" />
+                                    <input type="text" wire:model="first_name" value="{{ $company->first_name ?? '' }}" class="form-control mt-2" id="first_name" name="first_name" />
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="last_name">Last Name:</label>
-                                    <input type="text" wire:model="last_name" value="{{ $company->last_name ?? '' }}" class="form-control" id="last_name" name="last_name" />
+                                    <input type="text" wire:model="last_name" value="{{ $company->last_name ?? '' }}" class="form-control mt-2" id="last_name" name="last_name" />
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row mt-2">
                                 <div class="form-group col-md-4">
-                                    <label for="category">Country:</label>
-                                    <select class="form-select" wire:model="country" form-control" aria-label="Default select example" name="country">
+                                    <label for="country">Country <span class="text-danger">*</span></label>
+                                    <select class="form-select form-control mt-2" aria-label="Default select example" name="country" id="country" wire:model="country" wire:change="updateCountryCode">
+                                        <option value="">Select Country</option>
+                                        @foreach($countries as $country)
+                                        <option value="{{$country->name}}">{{$country->name}}</option>
+                                        @endforeach
 
-                                        <option value="India">India</option>
-                                        <option value="US">US</option>
-                                        <option value="Pakistan">Pakistan</option>
                                     </select>
+                                    @error('country')
+                                    <div class="alert alert-danger mt-2">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                                <div class="form-group col-md-4">
-                                    <label for="phone">Phone Number:</label>
-                                    <input type="text" wire:model="phone" value="{{ $company->phone ?? '' }}" class="form-control" id="phone" name="phone" />
+                                <div class="form-group col-md-8">
+                                    <label for="phone">Phone Number <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="col-md-2">
+                                            <input type="number" wire:model="country_code" class="form-control mt-2" id="country_code" name="country_code" />
+                                        </div>
+                                        <div class="col-md-6 ms-4">
+                                            <input type="number" wire:model="phone" class="form-control mt-2" id="phone" name="phone" />
+                                            @error('phone')
+                                            <div class="alert alert-danger mt-2">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+
                                 </div>
+
                             </div>
-                            <div class="row">
+                            <div class="row mt-2">
                                 <div class="form-group col-md-4">
                                     <label for="website">Website:</label>
-                                    <input type="text" wire:model="website" value="{{ $company->website ?? '' }}" class="form-control" id="website" name="website" />
+                                    <input type="text" wire:model="website" value="{{ $company->website ?? '' }}" class="form-control mt-2" id="website" name="website" />
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-md-4">
-                                    <label for="description">Media Links:</label>
 
-
-                                </div>
-                            </div>
-                            <div class="row">
                                 <div class="form-group col-md-4">
                                     <label for="twitter">Twitter:</label>
-                                    <input type="text" wire:model="twitter" value="{{ $company->twitter ?? '' }}" class="form-control" id="twitter" name="twitter" />
+                                    <input type="text" wire:model="twitter" value="{{ $company->twitter ?? '' }}" class="form-control mt-2" id="twitter" name="twitter" />
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row mt-2">
                                 <div class="form-group col-md-4">
                                     <label for="linkedin">LinkedIn:</label>
-                                    <input type="text" wire:model="linkedin" value="{{ $company->linkedin ?? '' }}" class="form-control" id="linkedin" name="linkedin" />
+                                    <input type="text" wire:model="linkedin" value="{{ $company->linkedin ?? '' }}" class="form-control mt-2" id="linkedin" name="linkedin" />
                                 </div>
-                            </div>
-                            <div class="row">
+
+
                                 <div class="form-group col-md-4">
                                     <label for="facebook">Facebook:</label>
-                                    <input type="text" wire:model="facebook" value="{{ $company->facebook ?? '' }}" class="form-control" id="facebook" name="facebook" />
+                                    <input type="text" wire:model="facebook" value="{{ $company->facebook ?? '' }}" class="form-control mt-2" id="facebook" name="facebook" />
                                 </div>
                             </div>
 
-                            <button class="btn btn-primary" wire:click="firstStepSubmit">Next Step</button>
+                            <button class="btn btn-primary mt-4" wire:click="firstStepSubmit">Next Step</button>
 
 
 
                         </div>
                         @endif
-
-
 
                     </div>
 
@@ -168,71 +195,90 @@
     <div class="setup-content container mt-4 {{ $currentStep != 2 ? 'display-none' : '' }}" id="step-2">
         <div class="row">
             <div class="col-md-10">
-                <form>
-                    @csrf
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h4>Organization Details</h4>
-                        </div>
-
-
-
-                        <div class="card-body">
-
-                            @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                            @endif
-                            <h6>Status of Organization</h6>
-
-                            <div class="row">
-
-
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="checkbox" name="organization_status[]" value="others">
-                                    Others
-
-                                </div>
-
-                            </div>
-
-
-
-                            <div class="row mt-4">
-                                <div class="form-group col-md-12">
-                                    <label for="organization_description">
-                                        <h6>Organization Descriptions:</h6>
-                                    </label>
-                                    <textarea class="form-control" id="organization_description" name="organization_description" rows="4">{{ old('organization_description') ?? '' }}</textarea>
-
-                                </div>
-                            </div>
-
-
-                            <div class="row mt-4">
-                                <div class="col-md-6">
-                                    <button type="submit" class="btn btn-primary">Next Step</button>
-                                    <button class="btn btn-danger  pull-right" type="button" wire:click="back(1)">Back</button>
-                                </div>
-                            </div>
-
-
-
-                        </div>
-
-                        <div class="card-footer">
-
-                        </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Organization Details</h4>
                     </div>
-                </form>
+
+
+
+                    <div class="card-body">
+
+                        @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
+                        <h6>Status of Organization</h6>
+
+                        <div class="row">
+                            @foreach($orgTypes->split($orgTypes->count()/2) as $row)
+                            <div class="col-md-6 ">
+                                @foreach($row as $data)
+                                <div class="form-check mt-4">
+                                    <input type="checkbox" name="organization_status[]" value="{{$data->name}}" class="form-check-input" wire:model="organization_status">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        {{$data->name}}
+                                    </label>
+                                </div>
+
+
+                                @endforeach
+                            </div>
+
+                            @endforeach
+
+                        </div>
+                        <div class="row mt-2 ">
+                            <div class="input-group">
+                                <div class="col-md-1">
+                                    <div class="form-check mt-4">
+                                        <input type="checkbox" name="organization_status[]" value="" id="otherCheck" class="form-check-input" wire:model="otherCheck">
+                                        <label class="form-check-label" for="flexCheckDefault">
+                                            Other
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mt-4 ms-2">
+                                    <input type="text" class="form-control" name="other" id="other" value="{{$other?? old('other') }} "  wire:model="other">
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="row mt-4">
+                            <div class="form-group col-md-12">
+                                <label for="organization_description">
+                                    <h6>Organization Descriptions:</h6>
+                                </label>
+                                <textarea class="form-control" id="organization_description" name="organization_description" rows="4" wire:model="organization_description">{{ old('organization_description') ?? '' }}</textarea>
+
+                            </div>
+                        </div>
+
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <button class="btn btn-primary" wire:click="secondStepSubmit">Next Step</button>
+                                <button class="btn btn-danger  pull-right" type="button" wire:click="back(1)">Back</button>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                    <div class="card-footer">
+
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -340,15 +386,20 @@
                     <div class="card-footer">
                         <div class="row mt-4">
                             <div class="col-md-6">
-                                <button type="submit" class="btn btn-primary">Next Step</button>
+                            <button class="btn btn-danger  pull-right" type="button" wire:click="back(2)">Back</button>
+                                <button class="btn btn-success" wire:click="thirdStepSubmit">Submit</button>
+                                
                             </div>
                         </div>
                     </div>
                 </div>
-                </form>
+              
             </div>
         </div>
     </div>
 
 
 </div>
+@push('scripts')
+
+@endpush
