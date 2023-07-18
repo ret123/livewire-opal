@@ -244,8 +244,9 @@
                         </div>
                         <div class="row mt-4">
                             <div class="col-md-6">
-                                <button class="btn btn-primary" wire:click="secondStepSubmit">Next Step</button>
-                                <button class="btn btn-danger  pull-right" type="button" wire:click="back(1)">Back</button>
+                                <button class="btn btn-danger" type="button" wire:click="back(1)">Back</button>
+                                <button class="btn btn-primary ms-4" wire:click="secondStepSubmit">Next Step</button>
+
                             </div>
                         </div>
                     </div>
@@ -353,11 +354,7 @@
                                 </div>
                             </div>
                         </form>
-                        <script>
-                            function removeUpload(filename) {
-                                @this.removeUpload('additional_doc', filename)
-                            }
-                        </script>
+
                     </div>
                 </div>
             </div>
@@ -366,19 +363,8 @@
 </div>
 @push('scripts')
 <script>
-    // const filesSelector = document.querySelector('#myFiles');
-
-    // filesSelector.addEventListener('change', () => {
-
-    //     const fileList = [...filesSelector.files];
-    //     fileList.forEach((file, index) => {
-    //         console.log(file[index].name);
-    //         @this.set('additional_doc.' + index + '.fileName', file.name)
-    //         @this.set('additional_doc.' + index + '.fileSize', file.size)
-    //         @this.upload('additional_doc.' + index + '.fileRef', file, (n) => {}, () => {}, (e) => {});
-
-    //     });
-
-    // });
+    function removeUpload(filename) {
+        @this.removeUpload('additional_doc', filename)
+    }
 </script>
 @endpush
