@@ -1,15 +1,15 @@
 <div>
     @if (session()->has('message'))
-    <div class="alert alert-success" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
+    <div class="alert alert-success mt-4" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
         {{ session('message') }}
     </div>
     @endif
     @if (session()->has('error'))
-    <div class="alert alert-danger" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
+    <div class="alert alert-danger mt-4" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
         {{ session('error') }}
     </div>
     @endif
-    <div class="stepwizard">
+    <div class="stepwizard mt-4">
         <div class="stepwizard-row setup-panel">
             <div class="multi-wizard-step">
                 <a href="#step-1" type="button" class="btn {{ $currentStep != 1 ? 'btn-default' : 'btn-primary' }}">1</a>
@@ -25,17 +25,15 @@
             </div>
         </div>
     </div>
-    <div class=" container setup-content  mt-4 {{ $currentStep != 1 ? 'display-none' : '' }}" id="step-1">
+    <div class=" container setup-content  mt-4  justify-content-center {{ $currentStep != 1 ? 'display-none' : '' }}" id="step-1">
         <div class="row">
-            <div class="col-md-10">
-
-
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">Contact Details</div>
                     <div class="card-body">
 
                         @if ($errors->any())
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
                             <ul>
                                 @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -82,17 +80,13 @@
                                 </div>
                                 @if(!$hideOTP)
                                 <div class="form-group col-md-4">
-
                                     <label for="otp">Verify Email Address </label> <br>
                                     <button class="btn btn-primary mt-2" type="submit" id="getOTP" wire:loading.attr="disabled" wire:click="sendOTP">
                                         <span wire:loading.remove wire:target="sendOTP">Request OTP</span>
                                         <span wire:loading wire:target="sendOTP">Sending OTP...</span>
-
                                     </button>
                                 </div>
                                 @endif
-
-
                             </div>
                         </form>
                         @if(!$hideOTP)
@@ -112,11 +106,11 @@
 
                             <div class="row">
                                 <div class="form-group col-md-4">
-                                    <label for="first_name">First Name:</label>
+                                    <label for="first_name">First Name <span class="text-danger">*</span></label>
                                     <input type="text" wire:model="first_name" value="{{ $company->first_name ?? '' }}" class="form-control mt-2" id="first_name" name="first_name" />
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label for="last_name">Last Name:</label>
+                                    <label for="last_name">Last Name <span class="text-danger">*</span></label>
                                     <input type="text" wire:model="last_name" value="{{ $company->last_name ?? '' }}" class="form-control mt-2" id="last_name" name="last_name" />
                                 </div>
                             </div>
@@ -142,9 +136,9 @@
                                         </div>
                                         <div class="col-md-6 ms-4">
                                             <input type="number" wire:model="phone" class="form-control mt-2" id="phone" name="phone" />
-                                            @error('phone')
+                                            <!-- @error('phone')
                                             <div class="alert alert-danger mt-2">{{ $message }}</div>
-                                            @enderror
+                                            @enderror -->
                                         </div>
                                     </div>
 
@@ -192,20 +186,16 @@
             </div>
         </div>
     </div>
-    <div class="setup-content container mt-4 {{ $currentStep != 2 ? 'display-none' : '' }}" id="step-2">
+    <div class="setup-content container mt-4 justify-content-center {{ $currentStep != 2 ? 'display-none' : '' }}" id="step-2">
         <div class="row">
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
                         <h4>Organization Details</h4>
                     </div>
-
-
-
                     <div class="card-body">
-
                         @if ($errors->any())
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
                             <ul>
                                 @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -214,7 +204,6 @@
                         </div>
                         @endif
                         <h6>Status of Organization</h6>
-
                         <div class="row">
                             @foreach($orgTypes->split($orgTypes->count()/2) as $row)
                             <div class="col-md-6 ">
@@ -225,13 +214,9 @@
                                         {{$data->name}}
                                     </label>
                                 </div>
-
-
                                 @endforeach
                             </div>
-
                             @endforeach
-
                         </div>
                         <div class="row mt-2 ">
                             <div class="input-group">
@@ -244,14 +229,10 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4 mt-4 ms-2">
-                                    <input type="text" class="form-control" name="other" id="other" value="{{$other?? old('other') }} "  wire:model="other">
+                                    <input type="text" class="form-control" name="other" id="other" value="{{$other?? old('other') }} " wire:model="other">
                                 </div>
                             </div>
-
                         </div>
-
-
-
                         <div class="row mt-4">
                             <div class="form-group col-md-12">
                                 <label for="organization_description">
@@ -261,43 +242,30 @@
 
                             </div>
                         </div>
-
-
                         <div class="row mt-4">
                             <div class="col-md-6">
                                 <button class="btn btn-primary" wire:click="secondStepSubmit">Next Step</button>
                                 <button class="btn btn-danger  pull-right" type="button" wire:click="back(1)">Back</button>
                             </div>
                         </div>
-
-
-
                     </div>
-
                     <div class="card-footer">
 
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
-    <div class="setup-content  container mt-4 {{ $currentStep != 3 ? 'display-none' : '' }}" id="step-3">
+    <div class="setup-content  container mt-4 justify-content-center {{ $currentStep != 3 ? 'display-none' : '' }}" id="step-3">
         <div class="row">
-            <div class="col-md-10">
-
-
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
                         <h4>Supporting Documents</h4>
                     </div>
-
-
-
                     <div class="card-body">
-
                         @if ($errors->any())
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
                             <ul>
                                 @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -305,101 +273,112 @@
                             </ul>
                         </div>
                         @endif
+                        <form>
 
-                        <div class="row mb-4">
-                            <div class="col-md-4">
-                                <h6>Document Name</h6>
-                            </div>
-                            <div class="col-md-4">
-                                Upload File
+
+                            @if($company_type == "company")
+                            <div class="row">
+                                <div class="col-md-4">
+                                    Company Registration <span class="text-danger">*</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="image-upload justify-content-center">
+                                        <input id="file-input" type="file" class="form-control" name="company_registration" />
+                                    </div>
+                                </div>
+
                             </div>
 
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                Company Registration
-                            </div>
-                            <div class="col-md-4">
-                                <div class="image-upload justify-content-center">
-                                    <label for="file-input">
-                                        <i class="fa-solid fa-upload" style="cursor:pointer"></i>
-                                    </label>
 
-                                    <input id="file-input" type="file" name="company_registration" />
+
+                            <div class="row mt-4">
+                                <div class="col-md-4">
+                                    VAT Registration <span class="text-danger">*</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="image-upload justify-content-center">
+                                        <input id="file-input" type="file" class="form-control" name="vat_registration" />
+                                    </div>
                                 </div>
                             </div>
+                            @endif
 
-                        </div>
+                            @error('additional_doc.*') <span class="text-red-500 italic text-sm px-3">{{ $message }}</span> @enderror
+                            <div class="row mt-4">
+                                <div class="col-md-4">
+                                    Additional Attachment(s)
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            Additional Documents
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">No.</th>
+                                                        <th scope="col">Filename</th>
+                                                        <th scope="col">Remove</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
 
-                        <div class="row">
-                            <div class="col-md-4">
-                                VAT Registration
+                                                    @foreach($additional_doc as $key => $file)
+
+                                                    <tr>
+                                                        <td>{{++$key}}</td>
+                                                        <td>{{$file->getClientOriginalName()}}</td>
+                                                        <td><i class="bi bi-trash" @click="removeUpload('{{$file->getFilename()}}')" style="cursor:pointer"></i></td>
+                                                    </tr>
+                                                    @endforeach
+
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                    <input type="file" name="" id="myFiles" class="form-control mt-4 mb-4" wire:model="additional_doc" wire:change="fileChange">
+                                </div>
+
                             </div>
-                            <div class="col-md-4">
-                                <div class="image-upload justify-content-center">
-                                    <label for="file-input">
-                                        <i class="fa-solid fa-upload" style="cursor:pointer"></i>
-                                    </label>
 
-                                    <input id="file-input" type="file" name="vat_registration" />
+                            <div class="card-footer">
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-danger  pull-right" type="button" wire:click="back(2)">Back</button>
+                                        <button class="btn btn-success" wire:click="thirdStepSubmit">Submit</button>
+
+                                    </div>
                                 </div>
                             </div>
-
-                        </div>
-
-                        <div class="row mt-4">
-                            <div class="col-md-4">
-                                <h6>Additional Documents</h6>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                Additional Document 1
-                            </div>
-                            <div class="col-md-4">
-                                <div class="image-upload justify-content-center">
-                                    <label for="file-input">
-                                        <i class="fa-solid fa-upload" style="cursor:pointer"></i>
-                                    </label>
-
-                                    <input id="file-input" type="file" name="doc_1" style="display:none" />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                Additional Document 2
-                            </div>
-                            <div class="col-md-4">
-                                <div class="image-upload justify-content-center">
-                                    <label for="file-input">
-                                        <i class="fa-solid fa-upload" style="cursor:pointer"></i>
-                                    </label>
-
-                                    <input id="file-input" type="file" name="doc_2" style="display:none" />
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="card-footer">
-                        <div class="row mt-4">
-                            <div class="col-md-6">
-                            <button class="btn btn-danger  pull-right" type="button" wire:click="back(2)">Back</button>
-                                <button class="btn btn-success" wire:click="thirdStepSubmit">Submit</button>
-                                
-                            </div>
-                        </div>
+                        </form>
+                        <script>
+                            function removeUpload(filename) {
+                                @this.removeUpload('additional_doc', filename)
+                            }
+                        </script>
                     </div>
                 </div>
-              
             </div>
         </div>
     </div>
-
-
 </div>
 @push('scripts')
+<script>
+    // const filesSelector = document.querySelector('#myFiles');
 
+    // filesSelector.addEventListener('change', () => {
+
+    //     const fileList = [...filesSelector.files];
+    //     fileList.forEach((file, index) => {
+    //         console.log(file[index].name);
+    //         @this.set('additional_doc.' + index + '.fileName', file.name)
+    //         @this.set('additional_doc.' + index + '.fileSize', file.size)
+    //         @this.upload('additional_doc.' + index + '.fileRef', file, (n) => {}, () => {}, (e) => {});
+
+    //     });
+
+    // });
+</script>
 @endpush
