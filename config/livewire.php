@@ -1,5 +1,7 @@
 <?php
 
+use App\Rules\UploadCount;
+
 return [
 
     /*
@@ -106,7 +108,15 @@ return [
             'jpg', 'jpeg', 'mpga', 'webp', 'wma',
         ],
         'max_upload_time' => 5,
-        'rules' => ['additional_doc.*' => 'file', 'mimes:pdf', 'max:10240'],  // Max duration (in minutes) before an upload gets invalidated.
+        'rules' => [
+            'additional_doc.*' =>  'mimes:pdf', 'max:10240',
+            'company_registration.*' =>  'mimes:pdf', 'max:10240',
+            'vat_registration.*' =>  'mimes:pdf', 'max:10240',
+
+
+
+
+        ],
     ],
     $messages = [
         'additional_doc.*.pdf' => 'Only pdf files are allowed.',

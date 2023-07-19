@@ -15,6 +15,7 @@ class Organization extends Model
 
     protected $casts = [
         'oraganization_status' => 'array',
+        'files' => 'array'
 
     ];
 
@@ -23,6 +24,14 @@ class Organization extends Model
         return Attribute::make(
             get: fn ($value) => json_decode($value),
             set: fn ($value) => json_encode($value),
+        );
+    }
+
+    protected function phone(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => '+' . $this->country_code . $value,
+            set: fn ($value) =>  $value,
         );
     }
 }

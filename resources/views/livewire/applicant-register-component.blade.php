@@ -1,14 +1,4 @@
 <div>
-    @if (session()->has('message'))
-    <div class="alert alert-success mt-4" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
-        {{ session('message') }}
-    </div>
-    @endif
-    @if (session()->has('error'))
-    <div class="alert alert-danger mt-4" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
-        {{ session('error') }}
-    </div>
-    @endif
     <div class="stepwizard mt-4">
         <div class="stepwizard-row setup-panel">
             <div class="multi-wizard-step">
@@ -31,8 +21,17 @@
                 <div class="card">
                     <div class="card-header">Contact Details</div>
                     <div class="card-body">
-
-                        @if ($errors->any())
+                        @if (session()->has('message'))
+                        <div class="alert alert-success mt-4" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
+                            {{ session('message') }}
+                        </div>
+                        @endif
+                        @if (session()->has('error'))
+                        <div class="alert alert-danger mt-4">
+                            {{ session('error') }}
+                        </div>
+                        @endif
+                        <!-- @if ($errors->any())
                         <div class="alert alert-danger" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
                             <ul>
                                 @foreach ($errors->all() as $error)
@@ -40,7 +39,7 @@
                                 @endforeach
                             </ul>
                         </div>
-                        @endif
+                        @endif -->
 
                         <div class="alert alert-danger print-error-msg" style="display:none">
                             <ul></ul>
@@ -54,12 +53,11 @@
                             <input class="form-check-input ms-4" type="radio" wire:model="company_type" name="company_type" value="Company" id="company" wire:click="$set('show', true)" :errors="$errors">
                             <label class="form-check-label" for="company">
                                 Company
-                            </label>
                         </div>
                         @if($show)
                         <div class="row">
                             <div id="div1" class="form-group  col-md-4">
-                                <label for="company_number">Company Registration Number:</label>
+                                <label for="company_number">Company Registration Number <span class="text-danger">*</span></label>
                                 <input type="text" wire:model="company_number" class="form-control mt-2" id="company_number" name="company_number">
                                 @error('company_number') <p class="text-danger">{{$message}}</p> @enderror
                             </div>
@@ -69,12 +67,12 @@
                             <div class="row mt-2">
 
                                 <div class="form-group col-md-4">
-                                    <label for="company_name">Company Name:</label>
+                                    <label for="company_name">Company Name <span class="text-danger">*</span></label>
                                     <input type="text" wire:model="company_name" class="form-control mt-2" id="company_name" name="company_name" :errors="$errors" />
                                     @error('company_name') <p class="text-danger">{{$message}}</p> @enderror
                                 </div>
                                 <div class="form-group col-md-4">
-                                    <label for="email">Email:</label>
+                                    <label for="email">Email <span class="text-danger">*</span></label>
                                     <input type="text" wire:model="email" class="form-control mt-2" id="email" name="email" :errors="$errors" />
                                     @error('email') <p class="text-danger">{{$message}}</p> @enderror
                                 </div>
@@ -93,8 +91,9 @@
                         <form wire:submit.prevent="verifyOTP">
                             <div class="row mt-2">
                                 <div class="form-group col-md-4">
-                                    <label for="otp">OTP:</label>
+                                    <label for="otp">OTP <span class="text-danger">*</span></label>
                                     <input type="text" id="otp" wire:model="otp" class="form-control mt-2" name="otp" />
+                                    @error('otp') <p class="text-danger">{{$message}}</p> @enderror
                                 </div>
                             </div>
                             <button class="btn btn-primary mt-4" wire:click="verifyOTP">Validate OTP</button>
@@ -108,10 +107,12 @@
                                 <div class="form-group col-md-4">
                                     <label for="first_name">First Name <span class="text-danger">*</span></label>
                                     <input type="text" wire:model="first_name" value="{{ $company->first_name ?? '' }}" class="form-control mt-2" id="first_name" name="first_name" />
+                                    @error('first_name') <p class="text-danger">{{$message}}</p> @enderror
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="last_name">Last Name <span class="text-danger">*</span></label>
                                     <input type="text" wire:model="last_name" value="{{ $company->last_name ?? '' }}" class="form-control mt-2" id="last_name" name="last_name" />
+                                    @error('last_name') <p class="text-danger">{{$message}}</p> @enderror
                                 </div>
                             </div>
                             <div class="row mt-2">
@@ -124,21 +125,18 @@
                                         @endforeach
 
                                     </select>
-                                    @error('country')
-                                    <div class="alert alert-danger mt-2">{{ $message }}</div>
-                                    @enderror
+                                    @error('country') <p class="text-danger">{{$message}}</p> @enderror
                                 </div>
                                 <div class="form-group col-md-8">
                                     <label for="phone">Phone Number <span class="text-danger">*</span></label>
                                     <div class="input-group">
-                                        <div class="col-md-2">
+                                        <div class="col-md-2 col-sm-4">
                                             <input type="number" wire:model="country_code" class="form-control mt-2" id="country_code" name="country_code" />
+                                            @error('country_code') <p class="text-danger">{{$message}}</p> @enderror
                                         </div>
-                                        <div class="col-md-6 ms-4">
+                                        <div class="col-md-6 col-sm-4 ms-4 ">
                                             <input type="number" wire:model="phone" class="form-control mt-2" id="phone" name="phone" />
-                                            <!-- @error('phone')
-                                            <div class="alert alert-danger mt-2">{{ $message }}</div>
-                                            @enderror -->
+                                            @error('phone') <p class="text-danger">{{$message}}</p> @enderror
                                         </div>
                                     </div>
 
@@ -176,6 +174,7 @@
                         </div>
                         @endif
 
+
                     </div>
 
                     <div class="card-footer">
@@ -186,7 +185,7 @@
             </div>
         </div>
     </div>
-    <div class="setup-content container mt-4 justify-content-center {{ $currentStep != 2 ? 'display-none' : '' }}" id="step-2">
+    <div class="setup-content container mt-2 justify-content-center {{ $currentStep != 2 ? 'display-none' : '' }}" id="step-2">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -266,7 +265,7 @@
                     </div>
                     <div class="card-body">
                         @if ($errors->any())
-                        <div class="alert alert-danger" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+                        <div class="alert alert-danger">
                             <ul>
                                 @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -274,31 +273,30 @@
                             </ul>
                         </div>
                         @endif
-                        <form>
-
-
-                            @if($company_type == "company")
+                        @if (session()->has('fileError'))
+                        <div class="alert alert-danger">
+                            {{ session('fileError') }}
+                        </div>
+                        @endif
+                        <form wire:submit.prevent="store()" enctype="multipart/form-data">
+                            @if($company_type == 'Company')
                             <div class="row">
                                 <div class="col-md-4">
                                     Company Registration <span class="text-danger">*</span>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="image-upload justify-content-center">
-                                        <input id="file-input" type="file" class="form-control" name="company_registration" />
+                                        <input id="file-input" type="file" class="form-control" wire:model="company_registration" name="company_registration" />
                                     </div>
                                 </div>
-
                             </div>
-
-
-
                             <div class="row mt-4">
                                 <div class="col-md-4">
                                     VAT Registration <span class="text-danger">*</span>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="image-upload justify-content-center">
-                                        <input id="file-input" type="file" class="form-control" name="vat_registration" />
+                                        <input id="file-input" type="file" class="form-control" wire:model="vat_registration" name="vat_registration" />
                                     </div>
                                 </div>
                             </div>
@@ -324,22 +322,22 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-
+                                                    @if(!empty($additional_doc))
                                                     @foreach($additional_doc as $key => $file)
-
                                                     <tr>
                                                         <td>{{++$key}}</td>
                                                         <td>{{$file->getClientOriginalName()}}</td>
                                                         <td><i class="bi bi-trash" @click="removeUpload('{{$file->getFilename()}}')" style="cursor:pointer"></i></td>
                                                     </tr>
                                                     @endforeach
+                                                    @endif
 
                                                 </tbody>
                                             </table>
 
                                         </div>
                                     </div>
-                                    <input type="file" name="" id="myFiles" class="form-control mt-4 mb-4" wire:model="additional_doc" wire:change="fileChange">
+                                    <input type="file" name="" id="myFiles" class="form-control mt-4 mb-4" wire:model="additional_doc">
                                 </div>
 
                             </div>
@@ -348,7 +346,7 @@
                                 <div class="row mt-4">
                                     <div class="col-md-6">
                                         <button class="btn btn-danger  pull-right" type="button" wire:click="back(2)">Back</button>
-                                        <button class="btn btn-success" wire:click="thirdStepSubmit">Submit</button>
+                                        <button class="btn btn-success">Submit</button>
 
                                     </div>
                                 </div>
@@ -363,8 +361,19 @@
 </div>
 @push('scripts')
 <script>
+    const fileInput = document.getElementById('myFiles');
+
+    fileInput.addEventListener('change', event => {
+        Livewire.emit('fileChange');
+    });
+</script>
+
+<script>
     function removeUpload(filename) {
-        @this.removeUpload('additional_doc', filename)
+
+        @this.removeUpload('additional_doc', filename);
+        Livewire.emit('fileRemoved', filename);
+
     }
 </script>
 @endpush

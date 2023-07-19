@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('company_name')->unique();
             $table->string('company_number')->nullable();
             $table->string('email')->unique();
-            
+
             // step 2
             $table->string('first_name');
             $table->string('last_name');
@@ -28,19 +28,20 @@ return new class extends Migration
             $table->string('twitter')->nullable();
             $table->string('linkedin')->nullable();
             $table->string('facebook')->nullable();
-            
+
             // step 3
             $table->json('organization_status');
             $table->longText('organization_description');
-            
+
             // Step 4
 
             $table->string('company_registration')->nullable();
             $table->string('vat_registration')->nullable();
-            $table->string('doc_1')->nullable();
-            $table->string('doc_2')->nullable();
-            $table->string('doc_3')->nullable();
-            $table->string('doc_4')->nullable();
+            $table->json('files')->nullable();
+            // $table->string('doc_1')->nullable();
+            // $table->string('doc_2')->nullable();
+            // $table->string('doc_3')->nullable();
+            // $table->string('doc_4')->nullable();
 
             $table->timestamps();
         });

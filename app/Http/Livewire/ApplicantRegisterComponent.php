@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Mail\SendOTP;
 use App\Models\Country;
+use App\Models\Organization;
 use App\Models\OrganizationType;
 use Carbon\Carbon;
 use Exception;
@@ -32,6 +33,11 @@ class ApplicantRegisterComponent extends Component
     public $orgTypes;
     public $otherCheck;
     public $i = 1;
+    public $files = [];
+    public $fileArray = [];
+
+
+    protected $listeners = ['fileChange' => 'fileChange', 'fileRemoved' => 'fileRemoved'];
 
 
     public function mount()
@@ -40,13 +46,7 @@ class ApplicantRegisterComponent extends Component
         $this->orgTypes = OrganizationType::all();
     }
 
-    protected $rules = [
-        'company_type' => 'required',
-        'company_number' => 'exclude_if:company_type,"NGO"|required|unique:organizations',
-        'company_name' => 'required|unique:organizations',
-        'email' => 'required|email|unique:organizations',
-        'additional_doc.*' => 'mimes:pdf|max:10000',
-    ];
+    protected $rules = [];
 
 
     public function render()
@@ -56,7 +56,12 @@ class ApplicantRegisterComponent extends Component
 
     public function sendOTP()
     {
-        $validatedData = $this->validate();
+        $validatedData = $this->validate([
+            'company_type' => 'required',
+            'company_number' => 'exclude_if:company_type,"NGO"|required|unique:organizations',
+            'company_name' => 'required|unique:organizations',
+            'email' => 'required|email|unique:organizations',
+        ]);
         $current_timestamp = Carbon::now()->timestamp;
         $this->secret = $this->email . $current_timestamp;
         $otp = Otp::generate($this->secret);
@@ -84,6 +89,7 @@ class ApplicantRegisterComponent extends Component
         if ($valid) {
             $this->showMainForm = true;
             $this->hideOTP = true;
+
             session()->flash('message', 'Email verified successfully!');
         } else {
             session()->flash('error', 'Invalid OTP. Try again!');
@@ -96,13 +102,27 @@ class ApplicantRegisterComponent extends Component
     }
 
     public function firstStepSubmit()
+
     {
+        // $this->phone = $this->country_code . $this->phone;
         $validatedData = $this->validate([
 
             'first_name' => 'required',
             'last_name' => 'required',
+            'phone' => 'required',
+            'country' => 'required',
+            'country_code' => 'required',
             'phone' => 'required'
+
         ]);
+        // Phone validation to check if code and phone number matches
+        $matchingCode = Organization::where('country_code', $this->country_code)->get();
+        foreach ($matchingCode as $code) {
+            $match = $code->where('phone', $this->phone)->first();
+            if ($match !== null) {
+                return  session()->flash('error', 'Phone number already registered');
+            }
+        }
 
         $this->currentStep = 2;
     }
@@ -126,12 +146,77 @@ class ApplicantRegisterComponent extends Component
 
     public function fileChange()
     {
-        $this->validate();
 
-        // dd($this->additional_doc);
+        // $this->emitSelf('countFiles');
+    }
 
-        foreach ($this->additional_doc as $key => $doc) {
-            $this->additional_doc[$key] = $doc->store('documents', 'public');
+    public function countFiles()
+    {
+        // dd($this->files);
+    }
+
+    public function fileRemoved($filename)
+    {
+        // dd($this->fileArray);
+        // dd($filename);
+    }
+    public function store()
+    {
+        $validatedData = $this->validate([
+            'company_registration' => 'exclude_if:company_type,"NGO"|required|mimes:pdf|max:10240',
+            'vat_registration' => 'exclude_if:company_type,"NGO"|required|mimes:pdf|max:10240',
+            'additional_doc.*' => 'mimes:pdf|max:10240',
+            'additional_doc' => 'array|max:4|distinct'
+        ], [
+            'additional_doc.max' => 'You can upload maximum 4 files'
+        ]);
+
+        $org  = new Organization();
+        if ($this->company_registration != null) {
+
+            $org->company_registration = $this->company_registration->store('documents/' . $this->company_name . '/registration', 'public');
+        }
+        if ($this->company_registration != null) {
+            $org->vat_registration = $this->company_registration->store('documents/' . $this->company_name . '/vat', 'public');
+        }
+
+        if (!empty($this->additional_doc)) {
+            foreach ($this->additional_doc as $key => $doc) {
+                $filename = $doc->getClientOriginalName();
+                if (in_array($filename, $this->fileArray)) {
+                    return  session()->flash('fileError', 'Same files are not allowed!');
+                }
+                array_push($this->fileArray, $doc->getClientOriginalName());
+                $this->files[$key] = $doc->store('documents/' . $this->company_name, 'public');
+            }
+            // $this->reset('fileArray');
+        }
+
+        // dd($this->fileArray);
+        $org->company_type = $this->company_type;
+        $org->company_name = $this->company_name;
+        $org->company_number = $this->company_number;
+        $org->email = $this->email;
+        $org->first_name = $this->first_name;
+        $org->last_name = $this->last_name;
+        $org->country = $this->country;
+        $org->country_code = $this->country_code;
+        $org->phone = $this->phone;
+        $org->website = $this->website;
+        $org->twitter = $this->twitter;
+        $org->linkedin = $this->linkedin;
+        $org->facebook = $this->facebook;
+        $org->organization_status = $this->organization_status;
+        $org->organization_description = $this->organization_description;
+        $org->files = $this->files;
+
+        if ($org->save()) {
+            $this->reset();
+            session()->flash('message', 'Registration Successfull!');
+            return redirect()->route('register.success');
+        } else {
+            $this->reset();
+            session()->flash('error', 'Something went wrong. Try Again ');
         }
     }
 }

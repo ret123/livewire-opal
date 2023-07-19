@@ -16,3 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', ApplicantRegisterComponent::class)->name('register.step1')->name('home');
+
+Route::get('/success', function () {
+    return view('register.success');
+})->name('register.success');
